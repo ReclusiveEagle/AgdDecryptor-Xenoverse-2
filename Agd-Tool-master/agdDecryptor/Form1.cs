@@ -87,50 +87,61 @@ namespace agdDecryptor
 
         private void toXml_Click(object sender, EventArgs e)
         {
-            //convert agd to xml
-            XmlWriter xw = XmlWriter.Create("avatar_growth_data.xml");
-            byte[] readByte = File.ReadAllBytes("avatar_growth_data.agd");
-            byte[] readFour = new byte[4];
-            ReadFourBytes(ref readByte,ref readFour, 8);
-            int LastID = BitConverter.ToInt32(readFour, 0);
-            //MessageBox.Show(LastID.ToString());
-            ReadFourBytes(ref readByte, ref readFour, 12);
-            int pos = BitConverter.ToInt32(readFour, 0);
-            //MessageBox.Show(pos.ToString());
-            int ID = 0;
-            int Value;
-            xw.WriteStartDocument();
-            xw.WriteStartElement("Data");
-            do
+            // convert agd to xml
+            // fancy indentation for easy reading :)
+            XmlWriterSettings settings = new XmlWriterSettings
             {
-                xw.WriteStartElement("level");
-                ReadFourBytes(ref readByte, ref readFour, pos);
-                ID = BitConverter.ToInt32(readFour, 0);
-                xw.WriteAttributeString("ID", Convert.ToString(ID));
-                pos += 4;
+                Indent = true,
+                IndentChars = "    ",
+                NewLineChars = "\n",
+                NewLineHandling = NewLineHandling.Replace
+            };
 
-                ReadFourBytes(ref readByte, ref readFour, pos);
-                Value = BitConverter.ToInt32(readFour, 0);
-                xw.WriteAttributeString("ExptoLevel", Convert.ToString(Value));
-                pos += 4;
+            using (XmlWriter xw = XmlWriter.Create("avatar_growth_data.xml", settings))
+            {
+                byte[] readByte = File.ReadAllBytes("avatar_growth_data.agd");
+                byte[] readFour = new byte[4];
+                ReadFourBytes(ref readByte, ref readFour, 8);
+                int LastID = BitConverter.ToInt32(readFour, 0);
+                //MessageBox.Show(LastID.ToString());
+                ReadFourBytes(ref readByte, ref readFour, 12);
+                int pos = BitConverter.ToInt32(readFour, 0);
+                //MessageBox.Show(pos.ToString());
+                int ID = 0;
+                int Value;
+                xw.WriteStartDocument();
+                xw.WriteStartElement("Data");
+                do
+                {
+                    xw.WriteStartElement("level");
 
-                ReadFourBytes(ref readByte, ref readFour, pos);
-                Value = BitConverter.ToInt32(readFour, 0);
-                xw.WriteAttributeString("RequiredExp", Convert.ToString(Value));
-                pos+=4;
+                    ReadFourBytes(ref readByte, ref readFour, pos);
+                    ID = BitConverter.ToInt32(readFour, 0);
+                    xw.WriteAttributeString("ID", Convert.ToString(ID));
+                    pos += 4;
 
-                ReadFourBytes(ref readByte, ref readFour, pos);
-                Value = BitConverter.ToInt32(readFour, 0);
-                xw.WriteAttributeString("AttributePoints", Convert.ToString(Value));
-                pos += 4;
+                    ReadFourBytes(ref readByte, ref readFour, pos);
+                    Value = BitConverter.ToInt32(readFour, 0);
+                    xw.WriteAttributeString("ExptoLevel", Convert.ToString(Value));
+                    pos += 4;
+
+                    ReadFourBytes(ref readByte, ref readFour, pos);
+                    Value = BitConverter.ToInt32(readFour, 0);
+                    xw.WriteAttributeString("RequiredExp", Convert.ToString(Value));
+                    pos += 4;
+
+                    ReadFourBytes(ref readByte, ref readFour, pos);
+                    Value = BitConverter.ToInt32(readFour, 0);
+                    xw.WriteAttributeString("AttributePoints", Convert.ToString(Value));
+                    pos += 4;
+
+                    xw.WriteEndElement();
+
+                } while (ID != LastID);
+
                 xw.WriteEndElement();
-           
-            } while (ID != LastID);
-            xw.WriteEndElement();
-            xw.WriteEndDocument();
-            xw.Close();
-    
-
+                xw.WriteEndDocument();
+            }
         }
 
         public void ReadFourBytes(ref byte[] Allbytes,ref byte[] Fourbytes, int pos)
