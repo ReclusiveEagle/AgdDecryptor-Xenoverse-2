@@ -6,4 +6,4 @@ XeNTaX has also since been shutdown.
 
 ## How to Use
 Use [CriPakTools](https://github.com/esperknight/CriPakTools) to extract/unpack files in .cpk format.
-From there, agdDecryptor can be used to convert any .agd files to .xml, such as avatar_growth_data.agd and back again.
+AgdDecryptor can now be used to convert any .agd files to .xml and back again, such as avatar_growth_data.agd.
